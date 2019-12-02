@@ -39,5 +39,5 @@ m - n = m + (- n)
 _*_ : ℤ → ℤ → ℤ
 pos m * pos n = pos (m ℕ* n)
 neg-suc m * neg-suc n = pos (suc m ℕ* suc n)
-pos m * neg-suc n = neg-suc (m ℕ* suc n)
-neg-suc m * pos n = neg-suc (suc m ℕ* n)
+pos m * neg-suc n = - pos (m ℕ* suc n)
+neg-suc m * pos n = - pos (suc m ℕ* n)
