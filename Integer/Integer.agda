@@ -10,8 +10,8 @@ data ℤ : Set where
 -- Unary Minus
 -_ : ℤ → ℤ
 - pos zero = pos zero
-- pos (suc n) = pos n
-- neg-suc n = neg-suc (suc n)
+- pos (suc n) = neg-suc n
+- neg-suc n = pos (suc n)
 
 -- Absolute Value
 ∣_∣ : ℤ → ℕ
