@@ -250,8 +250,6 @@ neg-suc-*--pos m (suc n) = refl
         | ℕ*-suc n m
         | Eq.sym (ℕ+-assoc n m (m ℕ* n))
         | Eq.sym (ℕ+-assoc m n (n ℕ* m))
-        | ℕ+-comm n m
         | ℕ+-comm m n
-        | ℕ*-comm m n
         | ℕ*-comm n m
         = refl
