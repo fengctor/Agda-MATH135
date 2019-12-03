@@ -24,7 +24,8 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ℕ+-suc (suc m) n rewrite ℕ+-suc m n = refl
 
 ℕ+-assoc : ∀ (m n p : ℕ) → (m ℕ+ n) ℕ+ p ≡ m ℕ+ (n ℕ+ p)
-ℕ+-assoc m n p = {!!}
+ℕ+-assoc zero n p = refl
+ℕ+-assoc (suc m) n p rewrite ℕ+-assoc m n p = refl
 
 ℕ+-comm : ∀ (m n : ℕ) → m ℕ+ n ≡ n ℕ+ m
 ℕ+-comm zero n rewrite ℕ+-identityʳ n = refl
@@ -121,13 +122,6 @@ pos--to-ℕ- m (suc n) = refl
         | ℕ--distribˡ-+neg-suc n m p
         = refl
 
--- needed?
-+-suc : ∀ (m n : ℤ) → m + (pos 1 + n) ≡ pos 1 + (m + n)
-+-suc (pos zero) n rewrite +-identityˡ (pos 1 + n) | +-identityˡ n = refl
-+-suc (pos (suc m)) (pos n) rewrite ℕ+-suc m n = refl
-+-suc (pos (suc m)) (neg-suc n) = {!!}
-+-suc (neg-suc x) n = {!!}
-
 +-comm : ∀ (m n : ℤ) → m + n ≡ n + m
 +-comm (pos m) (pos n) rewrite ℕ+-comm m n = refl
 +-comm (pos m) (neg-suc n) = refl
@@ -202,6 +196,14 @@ pos-*--pos (suc m) (suc n) = refl
 -pos-*-pos (suc m) zero = refl
 -pos-*-pos (suc m) (suc n) = refl
 
+neg-suc-*--pos : ∀ (m n : ℕ) → neg-suc m * (- pos n) ≡ pos (suc m ℕ* n)
+neg-suc-*--pos m zero rewrite ℕ*-zeroʳ m = refl
+neg-suc-*--pos m (suc n) = refl
+
+-pos-*-neg-suc : ∀ (m n : ℕ) → (- pos m) * neg-suc n ≡ pos (m ℕ* suc n)
+-pos-*-neg-suc zero n = refl
+-pos-*-neg-suc (suc m) n = refl
+
 *-assoc : ∀ (m n p : ℤ) → (m * n) * p ≡ m * (n * p)
 *-assoc (pos m) (pos n) (pos p) rewrite ℕ*-assoc m n p = refl
 *-assoc (pos m) (pos n) (neg-suc p)
@@ -212,10 +214,32 @@ pos-*--pos (suc m) (suc n) = refl
   rewrite pos-*--pos m (p ℕ+ n ℕ* p)
         | -pos-*-pos (m ℕ* suc n) p
         | ℕ*-assoc m (suc n) p = refl
-*-assoc (pos m) (neg-suc n) (neg-suc p) = {!!}
-*-assoc (neg-suc m) (pos n) (pos p) = {!!}
-*-assoc (neg-suc m) (pos n) (neg-suc p) = {!!}
-*-assoc (neg-suc m) (neg-suc x) p = {!!}
+*-assoc (pos m) (neg-suc n) (neg-suc p)
+  rewrite -pos-*-neg-suc (m ℕ* suc n) p
+        | ℕ*-assoc m (suc n) (suc p)
+        = refl
+*-assoc (neg-suc m) (pos n) (pos p)
+  rewrite -pos-*-pos (n ℕ+ m ℕ* n) p
+        | ℕ+-ℕ*-distribʳ n (m ℕ* n) p
+        | ℕ*-assoc m n p
+        = refl
+*-assoc (neg-suc m) (pos n) (neg-suc p)
+  rewrite neg-suc-*--pos m (n ℕ* suc p)
+        | -pos-*-neg-suc (n ℕ+ m ℕ* n) p
+        | ℕ+-ℕ*-distribʳ n (m ℕ* n) (suc p)
+        | ℕ*-assoc m n (suc p)
+        = refl
+*-assoc (neg-suc m) (neg-suc n) (pos p)
+  rewrite neg-suc-*--pos m (p ℕ+ n ℕ* p)
+        | ℕ+-ℕ*-distribʳ n (m ℕ* suc n) p
+        | Eq.sym (ℕ+-assoc p (n ℕ* p) (m ℕ* suc n ℕ* p))
+        | ℕ*-assoc m (suc n) p
+        = refl
+*-assoc (neg-suc m) (neg-suc n) (neg-suc p)
+  rewrite ℕ+-ℕ*-distribʳ n (m ℕ* suc n) (suc p)
+        | Eq.sym (ℕ+-assoc p (n ℕ* suc p) (m ℕ* suc n ℕ* suc p))
+        | ℕ*-assoc m (suc n) (suc p)
+        = refl
 
 *-comm : ∀ (m n : ℤ) → m * n ≡ n * m
 *-comm (pos m) (pos n) rewrite ℕ*-comm m n = refl
