@@ -4,12 +4,6 @@ open import Agda-MATH135.Integer.Integer
 open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _≤_ to _ℕ≤_)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 
-0-n≡-n : ∀ (n : ℤ) → pos 0 - n ≡ - n
-0-n≡-n (pos zero) = refl
-0-n≡-n (pos (suc n)) = refl
-0-n≡-n (neg-suc n) = refl
-
-
 {------------------
   _ℕ+_ properties
 ------------------}
@@ -41,10 +35,6 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ℕ--identityʳ (pos n) rewrite ℕ+-identityʳ n = refl
 ℕ--identityʳ (neg-suc n) = refl
 
-0ℕ--as-unary : ∀ (n : ℕ) → 0 ℕ- n ≡ - (pos n)
-0ℕ--as-unary zero = refl
-0ℕ--as-unary (suc n) = refl
-
 +-identityʳ : ∀ (n : ℤ) → n + pos 0 ≡ n
 +-identityʳ (pos n) rewrite ℕ+-identityʳ n = refl
 +-identityʳ (neg-suc n) = refl
@@ -53,24 +43,19 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 +-identityˡ (pos n) = refl
 +-identityˡ (neg-suc n) = refl
 
-pos-minus-pos : ∀ (m n : ℕ) → pos m - pos n ≡ m ℕ- n
-pos-minus-pos m zero = ℕ--identityʳ (pos m)
-pos-minus-pos m (suc n) = refl
+ℕ--inv : ∀ (n : ℕ) → n ℕ- n ≡ pos 0
+ℕ--inv zero = refl
+ℕ--inv (suc n) = ℕ--inv n
 
-pos0--as-unary : ∀ (n : ℤ) → pos 0 - n ≡ - n
-pos0--as-unary (pos zero) = refl
-pos0--as-unary (pos (suc n)) = refl
-pos0--as-unary (neg-suc n) = refl
++-invʳ : ∀ (n : ℤ) → n + (- n) ≡ pos 0
++-invʳ (pos zero) = refl
++-invʳ (pos (suc n)) = ℕ--inv n
++-invʳ (neg-suc n) = ℕ--inv n
 
-pos--to-ℕ- : ∀ (m n : ℕ) → m ℕ- n ≡ pos m - pos n
-pos--to-ℕ- m zero rewrite ℕ+-identityʳ m = refl
-pos--to-ℕ- m (suc n) = refl
-
-ℕ--neg-comm : ∀ (m n : ℕ) → m ℕ- n ≡ - (n ℕ- m)
-ℕ--neg-comm zero zero = refl
-ℕ--neg-comm zero (suc n) = refl
-ℕ--neg-comm (suc m) zero = refl
-ℕ--neg-comm (suc m) (suc n) = ℕ--neg-comm m n
++-invˡ : ∀ (n : ℤ) → (- n) + n ≡ pos 0
++-invˡ (pos zero) = refl
++-invˡ (pos (suc n)) = ℕ--inv n
++-invˡ (neg-suc n) = ℕ--inv n
 
 ℕ--distribˡ-+pos : ∀ (m n p : ℕ) → (m ℕ- n) + pos p ≡ (m ℕ+ p) ℕ- n
 ℕ--distribˡ-+pos m zero p = refl
