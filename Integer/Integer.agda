@@ -2,6 +2,10 @@ module Agda-MATH135.Integer.Integer where
 
 open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _≤_ to _ℕ≤_)
 
+infix  8 -_
+infixl 7 _*_
+infixl 6 _+_ _-_ _ℕ-_
+
 data ℤ : Set where
   pos : ℕ → ℤ
   neg-suc : ℕ → ℤ
