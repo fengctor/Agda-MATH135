@@ -1,6 +1,6 @@
-module Agda-MATH135.Divisibility where
+module Agda-MATH135.Integer.Divisibility where
 
-open import Agda-MATH135.Integer.Integer
+open import Agda-MATH135.Integer
 open import Agda-MATH135.Integer.Properties
 
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)

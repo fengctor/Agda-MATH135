@@ -1,4 +1,4 @@
-module Agda-MATH135.Integer.Integer where
+module Agda-MATH135.Integer where
 
 open import Data.Nat using (ℕ; zero; suc)
   renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _≤_ to _ℕ≤_)
