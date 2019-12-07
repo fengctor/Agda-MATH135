@@ -1,9 +1,59 @@
 module Agda-MATH135.Integer.Properties where
 
 open import Agda-MATH135.Integer
-open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _≤_ to _ℕ≤_)
 import Agda-MATH135.Natural.Properties as ℕ
+
+open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _≤_ to _ℕ≤_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
+
+ℕ--comm : ∀ (m n : ℕ) → m ℕ- n ≡ - (n ℕ- m)
+ℕ--comm zero zero = refl
+ℕ--comm zero (suc n) = refl
+ℕ--comm (suc m) zero = refl
+ℕ--comm (suc m) (suc n) = ℕ--comm m n
+
+ℕ--as-minus : ∀ (m n : ℕ) → m ℕ- n ≡ pos m - pos n
+ℕ--as-minus m zero rewrite ℕ.+-identityʳ m = refl
+ℕ--as-minus m (suc n) = refl
+
+neg-cancel : ∀ (n : ℤ) → - (- n) ≡ n
+neg-cancel (pos zero) = refl
+neg-cancel (pos (suc n)) = refl
+neg-cancel (neg-suc n) = refl
+
+neg-distrib-* : ∀ (m n : ℤ) → - (m * n) ≡ (- m) * n
+neg-distrib-* (pos zero) (pos n) = refl
+neg-distrib-* (pos (suc m)) (pos n) = refl
+neg-distrib-* (pos zero) (neg-suc n) = refl
+neg-distrib-* (pos (suc m)) (neg-suc n) = refl
+neg-distrib-* (neg-suc m) (pos n) = neg-cancel (pos (n ℕ+ m ℕ* n))
+neg-distrib-* (neg-suc m) (neg-suc n) = refl
+
+{------------------
+  ∣ _ ∣ properties
+------------------}
+
+abs-neg : ∀ (n : ℤ) → ∣ - n ∣ ≡ ∣ n ∣
+abs-neg (pos zero) = refl
+abs-neg (pos (suc n)) = refl
+abs-neg (neg-suc n) = refl
+
+abs-* : ∀ (m n : ℤ) → ∣ m * n ∣ ≡ ∣ m ∣ ℕ* ∣ n ∣
+abs-* (pos m) (pos n) = refl
+abs-* (pos m) (neg-suc n) = abs-neg (pos (m ℕ* suc n))
+abs-* (neg-suc m) (pos n) = abs-neg (pos (n ℕ+ m ℕ* n))
+abs-* (neg-suc m) (neg-suc n) = refl
+
+abs-+-either : ∀ (m n : ℤ) → ∣ m + n ∣ ≡ ∣ m ∣ ℕ+ ∣ n ∣ ⊎ ∣ m + n ∣ ≡ ∣ ∣ m ∣ ℕ- ∣ n ∣ ∣
+abs-+-either (pos m) (pos n) = inj₁ refl
+abs-+-either (pos m) (neg-suc n) = inj₂ refl
+abs-+-either (neg-suc m) (pos n)
+  rewrite ℕ--comm n (suc m)
+        = inj₂ (abs-neg (suc m ℕ- n))
+abs-+-either (neg-suc m) (neg-suc n)
+  rewrite ℕ.+-suc m n
+        = inj₁ refl
 
 {------------------
   _+_ properties
@@ -180,11 +230,7 @@ private
         | ℕ.*-comm n m
         = refl
 
-ℕ--comm : ∀ (m n : ℕ) → m ℕ- n ≡ - (n ℕ- m)
-ℕ--comm zero zero = refl
-ℕ--comm zero (suc n) = refl
-ℕ--comm (suc m) zero = refl
-ℕ--comm (suc m) (suc n) = ℕ--comm m n
+--abs-*-ℕˡ : ∀ (m : ℤ) (n : ℕ) → ∣ m ∣ * n ≡ pos (
 
 ℕ--from-pos : ∀ (m n : ℕ) → pos m - pos n ≡ m ℕ- n
 ℕ--from-pos m zero rewrite ℕ.+-identityʳ m = refl
@@ -218,6 +264,20 @@ factor-neg (neg-suc m) (neg-suc n) rewrite ℕ.+-suc m n = refl
 *-suc-neg-suc zero (neg-suc n) = refl
 *-suc-neg-suc (suc m) (pos n) rewrite factor-neg (pos n) (pos (n ℕ+ (n ℕ+ m ℕ* n))) = refl
 *-suc-neg-suc (suc m) (neg-suc n) = refl
+
+ℕ--distribʳ-* : ∀ (m n : ℕ) (p : ℤ) → (m ℕ- n) * p ≡ (pos m) * p - (pos n) * p
+ℕ--distribʳ-* m zero p rewrite *-zeroˡ p | +-identityʳ (pos m * p) = refl
+ℕ--distribʳ-* zero (suc n) p rewrite *-zeroˡ p | +-identityˡ (- (pos (suc n) * p)) | neg-distrib-* (pos (suc n)) p = refl
+ℕ--distribʳ-* (suc m) (suc n) p
+  rewrite *-suc-pos m p
+        | *-suc-pos n p
+        | Eq.sym (factor-neg p (pos n * p))
+        | +-comm p (pos m * p)
+        | +-assoc (pos m * p) p (- p + - (pos n * p))
+        | Eq.sym (+-assoc p (- p) (- (pos n * p)))
+        | +-invʳ p
+        | +-identityˡ (- (pos n * p))
+        = ℕ--distribʳ-* m n p
 
 ℕ--distribˡ : ∀ (m n : ℕ) (p : ℤ) → (m ℕ- suc n) * p ≡ (pos m * p) + (neg-suc n * p)
 ℕ--distribˡ zero n p rewrite *-zeroˡ p | +-identityˡ (neg-suc n * p) = refl
